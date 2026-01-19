@@ -19,7 +19,7 @@ def _version_from_pyproject():
     return m.group(1) if m else "0.0.0"
 
 project = "cudass"
-copyright = "2025 cudass contributors"
+copyright = "2025 cudass contributors"  # updated at view time by _static/copyright-year.js
 author = "cudass contributors"
 version = _version_from_pyproject()
 release = version
@@ -33,6 +33,10 @@ extensions = [
 ]
 
 exclude_patterns = ["_build"]
+
+# Static files and JS that runs at view time (e.g. dynamic copyright year)
+html_static_path = ["_static"]
+html_js_files = ["copyright-year.js"]
 
 # Furo theme
 html_theme = "furo"
