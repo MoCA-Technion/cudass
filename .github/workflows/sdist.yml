@@ -1,0 +1,61 @@
+# Build sdist, and on tag push: twine check, publish to PyPI, create GitHub Release.
+# No wheels; users build at install (pip install cudass).
+# Triggers: manual (workflow_dispatch), or push of tag v*.
+# - Manual: build sdist + twine check, upload Artifact.
+# - Tag push: same + upload to PyPI + create GitHub Release (attach sdist).
+# Secret: PYPI_API_TOKEN (PyPI API token). GITHUB_TOKEN is provided by Actions.
+
+name: sdist
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build deps
+        run: |
+          python -m pip install -U pip
+          pip install "torch>=2.0" "nvidia-cudss-cu12>=0.6" "Cython>=3.2.0" twine
+
+      - name: Build sdist
+        run: |
+          export CUDASS_CUDA_MAJOR=12
+          python setup.py sdist -d dist
+
+      - name: Twine check
+        run: twine check dist/*
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload dist/*
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.tar.gz
+          generate_release_notes: true
+          update: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

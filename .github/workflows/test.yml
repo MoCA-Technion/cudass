@@ -1,0 +1,31 @@
+# CI: lint only (ruff, darglint). No GPU or nvcc on GitHub-hosted runners.
+# pip install -e . and pytest need nvcc + CUDA to build extensions. Run full
+# tests locally: scripts/build_and_test.sh (CUDA, nvcc, nvidia-cudss-cu12, 2 GPUs).
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dev deps
+        run: pip install ruff darglint
+
+      - name: Ruff
+        run: ruff check .
+
+      - name: Darglint
+        run: darglint cudass

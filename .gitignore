@@ -1,0 +1,32 @@
+# Build and dist
+build/
+dist/
+docs/_build/
+*.egg-info/
+
+# Python
+__pycache__/
+*.pyc
+
+# Test and lint caches
+.pytest_cache/
+.ruff_cache/
+
+# Compiled extensions
+*.so
+
+# Cython-generated (regenerated at build)
+cudass/cuda/bindings/cudss_bindings.cpp
+
+# Generated at build for dynamic dependencies (CUDA-agnostic nvidia-cudss-cu12/cu13)
+dependencies.txt
+
+# Local / internal (not for public repo)
+_local/
+tmp/
+*.plan.md
+.DS_Store
+
+# Leftover from old LSF CI (no longer used)
+scripts/ci/lsf_env
+
