@@ -1,5 +1,6 @@
 # Sphinx configuration for cudass
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -10,10 +11,17 @@ autodoc_mock_imports = [
     "cudass.cuda.kernels._sparse_to_dense",
 ]
 
+# Version from pyproject.toml (single source of truth)
+def _version_from_pyproject():
+    p = os.path.join(os.path.dirname(__file__), "..", "pyproject.toml")
+    with open(p, encoding="utf-8") as f:
+        m = re.search(r'^version\s*=\s*"([^"]+)"', f.read(), re.M)
+    return m.group(1) if m else "0.0.0"
+
 project = "cudass"
 copyright = "2025 cudass contributors"
 author = "cudass contributors"
-version = "0.1.0"
+version = _version_from_pyproject()
 release = version
 
 extensions = [
