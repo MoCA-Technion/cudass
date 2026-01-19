@@ -16,6 +16,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # create GitHub Release and upload assets
     steps:
       - uses: actions/checkout@v4
 
@@ -55,7 +57,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*.tar.gz
-          generate_release_notes: true
-          update: true
+          generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
