@@ -13,7 +13,6 @@ from cudass.cuda.cuda_types import CUDA_R_32F, CUDA_R_32I, CUDA_R_64F
 from cudass.types import MatrixType
 
 
-
 # Pre-load libcudss.so.0 from nvidia-cudss-cu* so the Cython extension finds it
 # without requiring users to set LD_LIBRARY_PATH manually.
 def _preload_cudss_lib():
