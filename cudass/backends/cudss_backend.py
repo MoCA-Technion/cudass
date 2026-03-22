@@ -12,6 +12,28 @@ from cudass.backends.base import BackendBase
 from cudass.cuda.cuda_types import CUDA_R_32F, CUDA_R_32I, CUDA_R_64F
 from cudass.types import MatrixType
 
+# Pre-load libcudss.so.0 from nvidia-cudss-cu* so the Cython extension finds it
+# without requiring users to set LD_LIBRARY_PATH manually.
+def _preload_cudss_lib():
+    import ctypes
+    import os
+    import site
+
+    for cu in ("cu12", "cu13"):
+        for base in site.getsitepackages():
+            lib = os.path.join(base, "nvidia", cu, "lib", "libcudss.so.0")
+            if os.path.isfile(lib):
+                try:
+                    ctypes.CDLL(lib, mode=ctypes.RTLD_GLOBAL)
+                    return
+                except OSError:
+                    pass
+
+try:
+    _preload_cudss_lib()
+except Exception:
+    pass
+
 # Prefer our own cudss_bindings; fall back to nvmath only if ours are not available
 _cudss = None
 _cudss_import_error = None
